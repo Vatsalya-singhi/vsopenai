@@ -169,7 +169,7 @@ export class HelloWorldPanel {
         const stylesMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
         const manifestMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/manifest.json"));
 
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.5a28c01c.js"));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.fd380084.js"));
         const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.0a3e8b9b.css"));
 
         // Use a nonce to only allow specific scripts to be run
