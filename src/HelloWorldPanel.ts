@@ -1,3 +1,4 @@
+import { TokenManager } from './TokenManager';
 import * as vscode from "vscode";
 import { getNonce } from "./getNonce";
 import { Util } from "./Util";
@@ -66,19 +67,6 @@ export class HelloWorldPanel {
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel is closed programatically
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-        // // Handle messages from the webview
-        // this._panel.webview.onDidReceiveMessage(
-        //   (message) => {
-        //     switch (message.command) {
-        //       case "alert":
-        //         vscode.window.showErrorMessage(message.text);
-        //         return;
-        //     }
-        //   },
-        //   null,
-        //   this._disposables
-        // );
     }
 
     public dispose() {
@@ -99,24 +87,36 @@ export class HelloWorldPanel {
         const webview = this._panel.webview;
 
         this._panel.webview.html = this._getHtmlForWebview(webview);
-        webview.onDidReceiveMessage(async (data) => {
-            switch (data.type) {
-                case "onInfo": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showInformationMessage(data.value);
+
+        webview.onDidReceiveMessage(async (event) => {
+            console.log("extension listener => ", event);
+            switch (event.command) {
+                case "requestToken": {
+                    webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
+                    vscode.window.showInformationMessage("Token Requested, Token Dispatched!");
+                    break;
+                }
+                case "saveToken": {
+                    TokenManager.setToken(event.value);
+                    webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
+                    vscode.window.showInformationMessage("Token Saved, Token Dispatched!");
+                    break;
+                }
+                case "deleteToken": {
+                    TokenManager.setToken("");
+                    webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
+                    vscode.window.showInformationMessage("Token Deleted, Token Dispatched!");
                     break;
                 }
                 case "onError": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showErrorMessage(data.value);
+                    vscode.window.showErrorMessage(`Error=> ${event.command}`);
                     break;
                 }
+                default:
+                    break;
             }
         });
+
     }
 
     private _getHtmlForWebviewNOTUSED(webview: vscode.Webview) {
@@ -168,8 +168,9 @@ export class HelloWorldPanel {
         const stylesResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "reset.css"));
         const stylesMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
         const manifestMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/manifest.json"));
+        const mainScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
 
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.fd380084.js"));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.a51db9f7.js"));
         const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.0a3e8b9b.css"));
 
         // Use a nonce to only allow specific scripts to be run
@@ -186,20 +187,23 @@ export class HelloWorldPanel {
                     <link href="${stylesMainUri}" rel="stylesheet">
                     <link href="${cssUri}" rel="stylesheet">
                     <link href="${manifestMainUri}" rel="manifest"/>
-                    <title>VSChatGPT - Your AI</title>
+                    <title>VSChatGPT - Your CODE Assistant</title>
 
                     <meta http-equiv="Content-Security-Policy" 
                         content="
-                        default-src 'none' *; 
-                        img-src ${webview.cspSource} https: *; 
-                        script-src ${webview.cspSource} *; 
-                        style-src ${webview.cspSource} *; 
+                        default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic'; 
+                        script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; 
+                        connect-src * data: blob: 'unsafe-inline'; 
+                        img-src * data: blob: 'unsafe-inline'; 
+                        frame-src * data: blob: ; 
+                        style-src * data: blob: 'unsafe-inline';
+                        font-src * data: blob: 'unsafe-inline';
+                        frame-ancestors * data: blob: 'unsafe-inline';
                         "
                     />
 
-                    <script nonce="${nonce}">
-                        const tsvscode = acquireVsCodeApi();
-                    </script>
+                    <script nonce="${nonce}"> </script>
+                    <script src="${mainScriptUri}" nonce="${nonce}"></script>
 
 			    </head>
 

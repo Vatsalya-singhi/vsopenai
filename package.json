@@ -10,9 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vschatgpt.helloWorld",
-    "onCommand:vschatgpt.mainApp",
-    "onView:vschatgpt-sidebar"
+    "onCommand:vschatgpt.mainApp"
   ],
   "main": "./dist/extension.js",
   "contributes": {
