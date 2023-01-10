@@ -93,23 +93,27 @@ export class HelloWorldPanel {
             switch (event.command) {
                 case "requestToken": {
                     webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
-                    vscode.window.showInformationMessage("Token Requested, Token Dispatched!");
+                    vscode.window.showInformationMessage("Token Requested!");
                     break;
                 }
                 case "saveToken": {
                     TokenManager.setToken(event.value);
                     webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
-                    vscode.window.showInformationMessage("Token Saved, Token Dispatched!");
+                    vscode.window.showInformationMessage("Token Saved!");
                     break;
                 }
                 case "deleteToken": {
                     TokenManager.setToken("");
                     webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
-                    vscode.window.showInformationMessage("Token Deleted, Token Dispatched!");
+                    vscode.window.showInformationMessage("Token Deleted!");
                     break;
                 }
-                case "onError": {
-                    vscode.window.showErrorMessage(`Error=> ${event.command}`);
+                case "Error": {
+                    if (typeof event.value === "string") {
+                        vscode.window.showErrorMessage(`Error: ${event.value}`);
+                    } else {
+                        vscode.window.showErrorMessage(`Error: Please try again!`);
+                    }
                     break;
                 }
                 default:
@@ -117,47 +121,6 @@ export class HelloWorldPanel {
             }
         });
 
-    }
-
-    private _getHtmlForWebviewNOTUSED(webview: vscode.Webview) {
-        // // And the uri we use to load this script in the webview
-        const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "media", "main.js")
-        );
-
-        // Local path to css styles
-        const styleResetPath = vscode.Uri.joinPath(this._extensionUri, "media", "reset.css");
-        const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css");
-
-        // Uri to load styles into webview
-        const stylesResetUri = webview.asWebviewUri(styleResetPath);
-        const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-        // const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "out", "compiled/swiper.css"));
-
-        // Use a nonce to only allow specific scripts to be run
-        const nonce = getNonce();
-
-        return `
-            <!DOCTYPE html>
-			<html lang="en">
-
-			    <head>
-                    <meta charset="UTF-8">
-                    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <link href="${stylesResetUri}" rel="stylesheet">
-                    <link href="${stylesMainUri}" rel="stylesheet">
-                    <script nonce="${nonce}"></script>
-			    </head>
-
-                <body>
-                    <h1>Hello World</h1>
-                    <button id="button">Hello World</button>
-			    </body>
-
-                <script src="${scriptUri}" nonce="${nonce}"></script>
-
-			</html>`;
     }
 
 
@@ -170,8 +133,8 @@ export class HelloWorldPanel {
         const manifestMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/manifest.json"));
         const mainScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
 
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.a51db9f7.js"));
-        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.0a3e8b9b.css"));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.38431824.js"));
+        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.6ee50136.css"));
 
         // Use a nonce to only allow specific scripts to be run
         const nonce = getNonce();
