@@ -7,18 +7,15 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 
     TokenManager.globalState = context.globalState;
-    console.log("token value init=>", TokenManager.getToken());
 
     let mainApp = vscode.commands.registerCommand('vschatgpt.mainApp', () => {
         HelloWorldPanel.kill();
         HelloWorldPanel.createOrShow(context.extensionUri);
-        setTimeout(() => {
-            vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
-        }, 1000);
     });
     context.subscriptions.push(mainApp);
 
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {
+}
