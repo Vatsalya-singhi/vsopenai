@@ -1,5 +1,6 @@
 {
   "name": "vschatgpt",
+  "publisher" : "VatsalyaSinghi",
   "displayName": "VSChatGPT",
   "description": "VSCode ChatGPT Extension",
   "version": "0.0.1",
