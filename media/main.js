@@ -2,7 +2,9 @@
 // It cannot access the main VS Code APIs directly.
 
 (function () {
-    const vscode = acquireVsCodeApi();
-    const button = (document.getElementById('button'));
-    button.innerText = "Hello Button from Main.js";
+    const tsvscode = acquireVsCodeApi();
+    window.tsvscode = tsvscode;
+
+    console.log("tsvscode from main.js", tsvscode);
+    console.log("window.tsvscode from main.js", window.tsvscode);
 }());

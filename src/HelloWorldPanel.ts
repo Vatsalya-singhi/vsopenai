@@ -1,3 +1,4 @@
+import { TokenManager } from './TokenManager';
 import * as vscode from "vscode";
 import { getNonce } from "./getNonce";
 import { Util } from "./Util";
@@ -66,19 +67,6 @@ export class HelloWorldPanel {
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel is closed programatically
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-        // // Handle messages from the webview
-        // this._panel.webview.onDidReceiveMessage(
-        //   (message) => {
-        //     switch (message.command) {
-        //       case "alert":
-        //         vscode.window.showErrorMessage(message.text);
-        //         return;
-        //     }
-        //   },
-        //   null,
-        //   this._disposables
-        // );
     }
 
     public dispose() {
@@ -99,65 +87,40 @@ export class HelloWorldPanel {
         const webview = this._panel.webview;
 
         this._panel.webview.html = this._getHtmlForWebview(webview);
-        webview.onDidReceiveMessage(async (data) => {
-            switch (data.type) {
-                case "onInfo": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showInformationMessage(data.value);
+
+        webview.onDidReceiveMessage(async (event) => {
+            // console.log("extension listener => ", event);
+            switch (event.command) {
+                case "requestToken": {
+                    // vscode.window.showInformationMessage("Token Requested!");
+                    webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
                     break;
                 }
-                case "onError": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showErrorMessage(data.value);
+                case "saveToken": {
+                    TokenManager.setToken(event.value);
+                    webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
+                    vscode.window.showInformationMessage("Token Saved!");
                     break;
                 }
+                case "deleteToken": {
+                    TokenManager.setToken("");
+                    webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
+                    vscode.window.showInformationMessage("Token Deleted!");
+                    break;
+                }
+                case "Error": {
+                    if (typeof event.value === "string") {
+                        vscode.window.showErrorMessage(`Error: ${event.value}`);
+                    } else {
+                        vscode.window.showErrorMessage(`Error: Please try again!`);
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         });
-    }
 
-    private _getHtmlForWebviewNOTUSED(webview: vscode.Webview) {
-        // // And the uri we use to load this script in the webview
-        const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "media", "main.js")
-        );
-
-        // Local path to css styles
-        const styleResetPath = vscode.Uri.joinPath(this._extensionUri, "media", "reset.css");
-        const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css");
-
-        // Uri to load styles into webview
-        const stylesResetUri = webview.asWebviewUri(styleResetPath);
-        const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-        // const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "out", "compiled/swiper.css"));
-
-        // Use a nonce to only allow specific scripts to be run
-        const nonce = getNonce();
-
-        return `
-            <!DOCTYPE html>
-			<html lang="en">
-
-			    <head>
-                    <meta charset="UTF-8">
-                    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <link href="${stylesResetUri}" rel="stylesheet">
-                    <link href="${stylesMainUri}" rel="stylesheet">
-                    <script nonce="${nonce}"></script>
-			    </head>
-
-                <body>
-                    <h1>Hello World</h1>
-                    <button id="button">Hello World</button>
-			    </body>
-
-                <script src="${scriptUri}" nonce="${nonce}"></script>
-
-			</html>`;
     }
 
 
@@ -168,9 +131,10 @@ export class HelloWorldPanel {
         const stylesResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "reset.css"));
         const stylesMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
         const manifestMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/manifest.json"));
+        const mainScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
 
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.5a28c01c.js"));
-        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.0a3e8b9b.css"));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.7ce99ef1.js"));
+        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.c66eabe1.css"));
 
         // Use a nonce to only allow specific scripts to be run
         const nonce = getNonce();
@@ -186,20 +150,23 @@ export class HelloWorldPanel {
                     <link href="${stylesMainUri}" rel="stylesheet">
                     <link href="${cssUri}" rel="stylesheet">
                     <link href="${manifestMainUri}" rel="manifest"/>
-                    <title>VSChatGPT - Your AI</title>
+                    <title>VSChatGPT - Your CODE Assistant</title>
 
                     <meta http-equiv="Content-Security-Policy" 
                         content="
-                        default-src 'none' *; 
-                        img-src ${webview.cspSource} https: *; 
-                        script-src ${webview.cspSource} *; 
-                        style-src ${webview.cspSource} *; 
+                        default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic'; 
+                        script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; 
+                        connect-src * data: blob: 'unsafe-inline'; 
+                        img-src * data: blob: 'unsafe-inline'; 
+                        frame-src * data: blob: ; 
+                        style-src * data: blob: 'unsafe-inline';
+                        font-src * data: blob: 'unsafe-inline';
+                        frame-ancestors * data: blob: 'unsafe-inline';
                         "
                     />
 
-                    <script nonce="${nonce}">
-                        const tsvscode = acquireVsCodeApi();
-                    </script>
+                    <script nonce="${nonce}"> </script>
+                    <script src="${mainScriptUri}" nonce="${nonce}"></script>
 
 			    </head>
 

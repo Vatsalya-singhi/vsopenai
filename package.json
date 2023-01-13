@@ -1,18 +1,22 @@
 {
   "name": "vschatgpt",
+  "publisher": "VatsalyaSinghi",
   "displayName": "VSChatGPT",
   "description": "VSCode ChatGPT Extension",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.74.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vatsalya-singhi/vsopenai.git"
+  },
+  "icon": "icon.png",
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vschatgpt.helloWorld",
-    "onCommand:vschatgpt.mainApp",
-    "onView:vschatgpt-sidebar"
+    "onCommand:vschatgpt.mainApp"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -33,7 +37,12 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "test-compile": "tsc -p ./",
+    "make-package": "vsce package",
+    "make-publish": "vsce publish"
   },
   "devDependencies": {
     "@types/glob": "^8.0.0",
