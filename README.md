@@ -26,6 +26,10 @@ To use VS ChatGPT you must have an [OpenAI account](https://beta.openai.com/) an
 
 ## Release Notes
 
+### 0.0.5
+- Incremental Updates
+- Copy to Clipboard feature addition
+
 ### 0.0.4
 - Incremental Updates
 - Major Rollout
