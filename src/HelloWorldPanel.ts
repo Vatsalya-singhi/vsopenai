@@ -92,7 +92,6 @@ export class HelloWorldPanel {
             // console.log("extension listener => ", event);
             switch (event.command) {
                 case "requestToken": {
-                    // vscode.window.showInformationMessage("Token Requested!");
                     webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
                     break;
                 }
@@ -106,6 +105,11 @@ export class HelloWorldPanel {
                     TokenManager.setToken("");
                     webview.postMessage({ type: "setToken", value: TokenManager.getToken() });
                     vscode.window.showInformationMessage("Token Deleted!");
+                    break;
+                }
+                case "copyToClipboard": {
+                    vscode.env.clipboard.writeText(event.value);
+                    vscode.window.showInformationMessage("Copied to clipboard!");
                     break;
                 }
                 case "Error": {
@@ -133,8 +137,8 @@ export class HelloWorldPanel {
         const manifestMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/manifest.json"));
         const mainScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
 
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.7ce99ef1.js"));
-        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.c66eabe1.css"));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/js/main.598b0c94.js"));
+        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "build/static/css/main.e93b2994.css"));
 
         // Use a nonce to only allow specific scripts to be run
         const nonce = getNonce();
