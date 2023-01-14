@@ -1,10 +1,11 @@
 # VSChatGPT README
 
 VSChatGPT is an extension for Visual Studio Code that integrates the OpenAI ChatGPT AI into VS Code editor.
-
+Find my extension on [Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=VatsalyaSinghi.vschatgpt)
 ## Usage
 
-Run the command `VSChatGPT: Open VSChatGPT` to run OpenAI GPT-3 
+Run the command `VSChatGPT: Open VSChatGPT` to run OpenAI GPT-3
+
 ![run vschatgpt](images/VSChatGPT.jpg)
 
 ##  About ChatGPT
@@ -27,7 +28,6 @@ To use VS ChatGPT you must have an [OpenAI account](https://beta.openai.com/) an
 ## Release Notes
 
 ### 0.0.5
-- Incremental Updates
 - Copy to Clipboard feature addition
 
 ### 0.0.4
