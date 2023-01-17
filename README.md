@@ -4,7 +4,7 @@ VSChatGPT is an extension for Visual Studio Code that integrates the OpenAI Chat
 Find my extension on [Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=VatsalyaSinghi.vschatgpt)
 ## Usage
 
-Run the command `VSChatGPT: Open VSChatGPT` to run OpenAI GPT-3
+- Run the command `VSChatGPT: Open VSChatGPT` to run OpenAI GPT-3
 
 ![run vschatgpt](images/VSChatGPT.jpg)
 
@@ -33,7 +33,7 @@ ChatGPT can be a powerful tool for coding, by providing more accurate and inform
 
 - Language Model fine-tuning: Programmers can use pre-trained models like ChatGPT to fine-tune their model on the specific domain or task, which can help the model to understand the code and generate more accurate results.
 
-- In order to gain a deeper understanding, please refer to the provided links.
+In order to gain a deeper understanding, please refer to the provided links.
 - [What Is ChatGPT And How Can It Make You A Better Developer](https://www.youtube.com/watch?v=Gmx-54k3pUk)
 - [ChatGPT Tutorial for Developers](https://www.youtube.com/watch?v=sTeoEFzVNSc)
 
